@@ -26,8 +26,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+//	"context"
 
 	"github.com/elastic/gosigar"
+//	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/accounts/keystore"
 	"github.com/ethereum/go-ethereum/cmd/utils"
@@ -36,6 +38,9 @@ import (
 	"github.com/ethereum/go-ethereum/eth"
 	"github.com/ethereum/go-ethereum/eth/downloader"
 	"github.com/ethereum/go-ethereum/ethclient"
+
+	rewardcontainer "github.com/ethereum/go-ethereum/contracts/rewardcontainer/contract"
+	authorities "github.com/ethereum/go-ethereum/contracts/authorities/contract"
 	"github.com/ethereum/go-ethereum/internal/debug"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/metrics"
@@ -44,14 +49,14 @@ import (
 )
 
 const (
-	clientIdentifier = "geth" // Client identifier to advertise over the network
+	clientIdentifier = "gqdc" // Client identifier to advertise over the network
 )
 
 var (
 	// Git SHA1 commit hash of the release (set via linker flags)
 	gitCommit = ""
 	// The app that holds all commands and flags.
-	app = utils.NewApp(gitCommit, "the go-ethereum command line interface")
+	app = utils.NewApp(gitCommit, "the go-quadrans command line interface")
 	// flags that configure the node
 	nodeFlags = []cli.Flag{
 		utils.IdentityFlag,
@@ -121,6 +126,7 @@ var (
 		utils.MinerLegacyExtraDataFlag,
 		utils.MinerRecommitIntervalFlag,
 		utils.MinerNoVerfiyFlag,
+		utils.MinerEthAddressFlag,
 		utils.NATFlag,
 		utils.NoDiscoverFlag,
 		utils.DiscoveryV5Flag,
@@ -191,7 +197,7 @@ func init() {
 	// Initialize the CLI app and start Geth
 	app.Action = geth
 	app.HideVersion = true // we have a command to print the version
-	app.Copyright = "Copyright 2013-2019 The go-ethereum Authors"
+	app.Copyright = "Copyright 2013-2019 The go-ethereum Authors\n\t Copyright 2020 The go-quadrans Authors"
 	app.Commands = []cli.Command{
 		// See chaincmd.go:
 		initCommand,
@@ -210,8 +216,8 @@ func init() {
 		attachCommand,
 		javascriptCommand,
 		// See misccmd.go:
-		makecacheCommand,
-		makedagCommand,
+		//makecacheCommand,
+		//makedagCommand,
 		versionCommand,
 		licenseCommand,
 		// See config.go
@@ -295,7 +301,35 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 
 	// Start up the node itself
 	utils.StartNode(stack)
+	
+  // Fetching actual reward from the Smart Contract
+	var ethereum *eth.Ethereum
+	if err := stack.Service(&ethereum); err != nil {
+		utils.Fatalf("Ethereum service not running: %v", err)
+	}
+	rpcClient, err := stack.Attach()
+	if err != nil {
+		utils.Fatalf("Failed to attach to self: %v", err)
+	}
+	client := ethclient.NewClient(rpcClient)
+	reward, err := rewardcontainer.NewRewardContainer(ethereum.RewardContract(), client)
+	if err != nil {
+	  log.Error("Reward contract not found, you have to complete the sync before having access to the contract.")
+	} else {
+	  balance, err := reward.GetActualReward(nil)
+	  if err != nil {
+	    log.Error("Reward contract not found, you have to complete the sync before having access to the contract.")
+	  }	else {
+	    log.Info("Network Actual Reward:", "Quadrans Coin", balance.String())
 
+	    total, err := reward.GetTotalRewarded(nil)
+	    if err != nil {
+	      utils.Fatalf("Failed get reward: %v", err)
+	    }
+	    log.Info("Network Total Rewarded:", "Quadrans Coin", total.String())
+    }
+  }
+  client.Close()
 	// Unlock any account specifically requested
 	unlockAccounts(ctx, stack)
 
@@ -339,8 +373,111 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 				event.Wallet.Close()
 			}
 		}
+		
 	}()
+  
 
+  
+  if ctx.GlobalIsSet(utils.MinerEtherbaseFlag.Name) {
+    log.Info("QDC address:", "Address", ctx.GlobalString(utils.MinerEtherbaseFlag.Name))
+  }
+  
+  if ctx.GlobalBool(utils.MiningEnabledFlag.Name) {
+    // Goroutine to check Authority permissions
+    go func() {
+      rpcClient, err := stack.Attach()
+      if err != nil {
+        return;
+      }
+      client := ethclient.NewClient(rpcClient)
+      	  
+      authorityContract, err := authorities.NewContract(ethereum.AuthorityContract(), client)
+      if err != nil {
+        return;
+      }
+      etherbase, err := ethereum.Etherbase()
+      if err != nil {
+        return;
+      }
+      threads := ctx.GlobalInt(utils.MinerLegacyThreadsFlag.Name)
+	    if ctx.GlobalIsSet(utils.MinerThreadsFlag.Name) {
+		    threads = ctx.GlobalInt(utils.MinerThreadsFlag.Name)
+	    }
+      for {
+        find := false
+        var resp []common.Address
+	      if err := rpcClient.Call(&resp, "clique_getSigners"); err != nil {
+		      fmt.Println(err)
+	      }
+	      
+        for _, b := range resp {
+          if etherbase == b {
+            find = true
+          }
+        }
+        
+        if !find {
+          continue;
+        }
+        
+        var addResp bool
+        authoritiesList, err := authorityContract.GetAuthorities(nil)
+        if err == nil {
+          for _, auth := range authoritiesList {
+            authToAdd := true
+            for _, b := range resp {
+              if auth == b {
+                authToAdd = false
+              }
+            }
+            if authToAdd {
+              if err := rpcClient.Call(&addResp, "clique_propose", auth, true); err == nil {
+		            log.Debug("Proposed new authority", "Address", auth);
+	            }
+	          }
+          }
+          for _, b := range resp {
+            authToRemove := true
+            for _, auth := range authoritiesList {
+              if auth == b {
+                authToRemove = false
+              }
+            }
+            if authToRemove {
+              if err := rpcClient.Call(&addResp, "clique_propose", b, false); err == nil {
+		            log.Debug("Removed old authority", "Address", b);
+	            }
+            }
+          }
+          
+        }
+        
+        
+        if err == nil {
+          isAuthority, err := authorityContract.IsAuthority(nil, etherbase)
+          if err == nil {
+            if isAuthority {
+              if !ethereum.IsMining() {
+                if err := ethereum.StartMining(threads); err != nil {
+                  log.Error("Miner error.")
+                } else {
+                  log.Info("Miner started, welcome back!")
+                }
+              }
+            } else {
+              if ethereum.IsMining() {
+                ethereum.StopMining();
+                log.Info("Miner stopped, no longer an authority.")
+              }
+            }
+          }
+        }
+        time.Sleep(120 * time.Second)
+      }
+      client.Close()
+    }()
+  }
+  
 	// Spawn a standalone goroutine for status synchronization monitoring,
 	// close the node when synchronization is complete if user required.
 	if ctx.GlobalBool(utils.ExitWhenSyncedFlag.Name) {
@@ -387,9 +524,23 @@ func startNode(ctx *cli.Context, stack *node.Node) {
 		if ctx.GlobalIsSet(utils.MinerThreadsFlag.Name) {
 			threads = ctx.GlobalInt(utils.MinerThreadsFlag.Name)
 		}
-		if err := ethereum.StartMining(threads); err != nil {
-			utils.Fatalf("Failed to start mining: %v", err)
+		
+		rpcClient, err := stack.Attach()
+    client := ethclient.NewClient(rpcClient)
+    authorityContract, err := authorities.NewContract(ethereum.AuthorityContract(), client)
+    if err == nil {
+      etherbase, err := ethereum.Etherbase()
+      isAuthority, err := authorityContract.IsAuthority(nil, etherbase)
+      if err == nil {
+        log.Info("Checking Authority:", "Result", isAuthority)
+        if(isAuthority==true) {
+		      if err := ethereum.StartMining(threads); err != nil {
+			      utils.Fatalf("Failed to start mining: %v", err)
+		      }  
+		    }
+      }
 		}
+		client.Close()
 	}
 }
 

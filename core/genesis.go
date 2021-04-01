@@ -307,11 +307,58 @@ func GenesisBlockForTesting(db ethdb.Database, addr common.Address, balance *big
 func DefaultGenesisBlock() *Genesis {
 	return &Genesis{
 		Config:     params.MainnetChainConfig,
-		Nonce:      66,
-		ExtraData:  hexutil.MustDecode("0x11bbe8db4e347b4e8c937c1c8370e4b5ed33adb3db69cbdb7a38e1e50b1b82fa"),
-		GasLimit:   5000,
-		Difficulty: big.NewInt(17179869184),
-		Alloc:      decodePrealloc(mainnetAllocData),
+		Timestamp:  1551355120,
+		ExtraData:  hexutil.MustDecode("0x00000000000000000000000000000000000000000000000000000000000000004fa97baa508306bf451ed49f3fa51d48480ac831d22d2988b59fe000c812462b5e37ca7398986148c314e7ecb67dc8da9a954de3563c20a853848d2be189d4c5882e7dcb4707729706531f156957176e5a3b5970967c1167d26b0ae0283547b0e0d7a06d3f45b986e936314e243a47bb6ce251ab06903cf084f1f6f7df2634432d005dedb07a0530028fc715fc65fb790f01d1a52c85c80513a629d5b7506feffcc2bd18f34a3a1ebc95c0d2f62901d4a4b18d0cfc849795f0db3b80fc6693c34cc63e85ce1565f3fc2e45c1a8db5091484d8d1e20b2158bf140cd49fc20102c1d8edcd3b6dd48abe712eb1174ecd3040000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
+		GasLimit:   6500000,
+		Difficulty: big.NewInt(1),
+		Alloc: map[common.Address]GenesisAccount{
+			common.BytesToAddress([]byte{1}): {Balance: big.NewInt(1)}, // ECRecover
+			common.BytesToAddress([]byte{2}): {Balance: big.NewInt(1)}, // SHA256
+			common.BytesToAddress([]byte{3}): {Balance: big.NewInt(1)}, // RIPEMD
+			common.BytesToAddress([]byte{4}): {Balance: big.NewInt(1)}, // Identity
+			common.BytesToAddress([]byte{5}): {Balance: big.NewInt(1)}, // ModExp
+			common.BytesToAddress([]byte{6}): {Balance: big.NewInt(1)}, // ECAdd
+			common.BytesToAddress([]byte{7}): {Balance: big.NewInt(1)}, // ECScalarMul
+			common.BytesToAddress([]byte{8}): {Balance: big.NewInt(1)}, // ECPairing
+			// Satoshi ones
+			common.HexToAddress("0x8e514c6436851036571c0d84d3c31376081ce8ee"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xad33144dfbf9bdf00818418c8e26ae6c4d284e1b"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xc61f57a5425106f3a8b3f490e6721686b3410d8b"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xc4381831b291d6bfd8d27ed3f4e11fbd8efce301"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xa83b35d30b3b0ffb10449bcdd1722a4615e6ab67"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x41eed56087d15326ab373ce41a1b7a45b5c46613"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x50de79edefef757282157328bcba8f92fea8a75d"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x6f6e64401230ef836a03a1047ad351ae219c1f92"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x437cf4834a78f75f55732d50d812da7e877581c5"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x0c069b103c6f58215e4c01325d747a42360b6729"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x0235c26c31f41915b0b8dfd9fe879445beffbe8d"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x33acd96cdb1f128dfd584483b64a47f48adc9c34"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x20d437da8655eb17ba5f2ccbec4af6bcb697ad3e"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x820f4b453f846c7d9c22c9788ed957303250f040"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x2219beb4969058051d83d68ba69e4ff6463bae18"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xe136b1bd27184b56b55ef270fae4620b4d9330b1"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xf6469c51f072710cbbcecdd4c9e99cc4380cc492"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x2d2b844406a8d8192d33018385f8efa45d9e0dd4"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x7d44f30bf04aae2394feabdba69a919be2238c41"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x01e85a02b32c893d5f6edeccad78d400e63cfb79"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xa6e03a9f1556217fa6139a3f02ea73bf26b37c77"): {Balance: big.NewInt(1000000000000000000)},
+
+			common.HexToAddress("0xfc20102c1d8edcd3b6dd48abe712eb1174ecd304"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xfc2e45c1a8db5091484d8d1e20b2158bf140cd49"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xfc849795f0db3b80fc6693c34cc63e85ce1565f3"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xfcc2bd18f34a3a1ebc95c0d2f62901d4a4b18d0c"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xfc65fb790f01d1a52c85c80513a629d5b7506fef"): {Balance: big.NewInt(1000000000000000000)},
+			
+			common.HexToAddress("0x84f1f6f7df2634432d005dedb07a0530028fc715"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x3f45b986e936314e243a47bb6ce251ab06903cf0"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x5a3b5970967c1167d26b0ae0283547b0e0d7a06d"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xe189d4c5882e7dcb4707729706531f156957176e"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xc314e7ecb67dc8da9a954de3563c20a853848d2b"): {Balance: big.NewInt(1000000000000000000)},
+			
+			common.HexToAddress("0xd22d2988b59fe000c812462b5e37ca7398986148"): {Balance: big.NewInt(1000000000000000000)},
+			
+			common.HexToAddress("0x4fa97baa508306bf451ed49f3fa51d48480ac831"): {Balance: big.NewInt(1000000000000000000)},
+		},
 	}
 }
 
@@ -320,10 +367,25 @@ func DefaultTestnetGenesisBlock() *Genesis {
 	return &Genesis{
 		Config:     params.TestnetChainConfig,
 		Nonce:      66,
-		ExtraData:  hexutil.MustDecode("0x3535353535353535353535353535353535353535353535353535353535353535"),
+		ExtraData:  hexutil.MustDecode("0x0000000000000000000000000000000000000000000000000000000000000000eb453620fb7518c7cc8ad8b7030761b23a59fc7ebe5b88ab4a4d063b6055c3515017e1a1cf972c8b8ae646dad76acc29c31d094e42bf2684c734ab9b4f0a7b562e8a664f6c9570fbe90530964d361984f1a565c601ce8c57f7974c7f6fefffc26bffb28c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"),
 		GasLimit:   16777216,
-		Difficulty: big.NewInt(1048576),
-		Alloc:      decodePrealloc(testnetAllocData),
+		Difficulty: big.NewInt(1),
+		Alloc:      map[common.Address]GenesisAccount{
+			common.BytesToAddress([]byte{1}): {Balance: big.NewInt(1)}, // ECRecover
+			common.BytesToAddress([]byte{2}): {Balance: big.NewInt(1)}, // SHA256
+			common.BytesToAddress([]byte{3}): {Balance: big.NewInt(1)}, // RIPEMD
+			common.BytesToAddress([]byte{4}): {Balance: big.NewInt(1)}, // Identity
+			common.BytesToAddress([]byte{5}): {Balance: big.NewInt(1)}, // ModExp
+			common.BytesToAddress([]byte{6}): {Balance: big.NewInt(1)}, // ECAdd
+			common.BytesToAddress([]byte{7}): {Balance: big.NewInt(1)}, // ECScalarMul
+			common.BytesToAddress([]byte{8}): {Balance: big.NewInt(1)}, // ECPairing
+			common.HexToAddress("0xeb453620fb7518c7cc8ad8b7030761b23a59fc7e"): {Balance: big.NewInt(1000000000000000000)}, 
+			common.HexToAddress("0xbe5b88ab4a4d063b6055c3515017e1a1cf972c8b"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x8ae646dad76acc29c31d094e42bf2684c734ab9b"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x4f0a7b562e8a664f6c9570fbe90530964d361984"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0xf1a565c601ce8c57f7974c7f6fefffc26bffb28c"): {Balance: big.NewInt(1000000000000000000)},
+			common.HexToAddress("0x8598b3e931aacb7c1c708427702fa419b0762d57"): {Balance: new(big.Int).Sub(new(big.Int).Lsh(big.NewInt(1), 256), big.NewInt(9))},
+		},
 	}
 }
 

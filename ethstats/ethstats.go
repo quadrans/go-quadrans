@@ -663,13 +663,14 @@ func (s *Service) reportPending(conn *websocket.Conn) error {
 
 // nodeStats is the information to report about the local node.
 type nodeStats struct {
-	Active   bool `json:"active"`
-	Syncing  bool `json:"syncing"`
-	Mining   bool `json:"mining"`
-	Hashrate int  `json:"hashrate"`
-	Peers    int  `json:"peers"`
-	GasPrice int  `json:"gasPrice"`
-	Uptime   int  `json:"uptime"`
+	Active   bool           `json:"active"`
+	Syncing  bool           `json:"syncing"`
+	Mining   bool           `json:"mining"`
+	Hashrate int            `json:"hashrate"`
+	Peers    int            `json:"peers"`
+	GasPrice int            `json:"gasPrice"`
+	Uptime   int            `json:"uptime"`
+	Coinbase common.Address `json:coinbase`
 }
 
 // reportPending retrieves various stats about the node at the networking and
@@ -681,11 +682,13 @@ func (s *Service) reportStats(conn *websocket.Conn) error {
 		hashrate int
 		syncing  bool
 		gasprice int
+		coinbase common.Address
 	)
 	if s.eth != nil {
 		mining = s.eth.Miner().Mining()
 		hashrate = int(s.eth.Miner().HashRate())
-
+    coinbase = s.eth.Miner().GetEtherbase()
+    
 		sync := s.eth.Downloader().Progress()
 		syncing = s.eth.BlockChain().CurrentHeader().Number.Uint64() >= sync.HighestBlock
 
@@ -693,6 +696,7 @@ func (s *Service) reportStats(conn *websocket.Conn) error {
 		gasprice = int(price.Uint64())
 	} else {
 		sync := s.les.Downloader().Progress()
+		coinbase = common.Address{}
 		syncing = s.les.BlockChain().CurrentHeader().Number.Uint64() >= sync.HighestBlock
 	}
 	// Assemble the node stats and send it to the server
@@ -708,6 +712,7 @@ func (s *Service) reportStats(conn *websocket.Conn) error {
 			GasPrice: gasprice,
 			Syncing:  syncing,
 			Uptime:   100,
+			Coinbase: coinbase,
 		},
 	}
 	report := map[string][]interface{}{

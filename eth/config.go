@@ -30,7 +30,8 @@ import (
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/eth/downloader"
 	"github.com/ethereum/go-ethereum/eth/gasprice"
-	"github.com/ethereum/go-ethereum/params"
+	//"github.com/ethereum/go-ethereum/params"
+
 )
 
 // DefaultConfig contains default settings for use on the Ethereum main net.
@@ -51,7 +52,7 @@ var DefaultConfig = Config{
 	TrieTimeout:    60 * time.Minute,
 	MinerGasFloor:  8000000,
 	MinerGasCeil:   8000000,
-	MinerGasPrice:  big.NewInt(params.GWei),
+	MinerGasPrice:  big.NewInt(1024),
 	MinerRecommit:  3 * time.Second,
 
 	TxPool: core.DefaultTxPoolConfig,

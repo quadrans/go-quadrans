@@ -34,6 +34,7 @@ var AppHelpTemplate = `NAME:
    {{.App.Name}} - {{.App.Usage}}
 
    Copyright 2013-2019 The go-ethereum Authors
+   Copyright 2020 The go-quadrans Authors
 
 USAGE:
    {{.App.HelpName}} [options]{{if .App.Commands}} command [command options]{{end}} {{if .App.ArgsUsage}}{{.App.ArgsUsage}}{{else}}[arguments...]{{end}}
@@ -65,16 +66,13 @@ type flagGroup struct {
 // AppHelpFlagGroups is the application flags, grouped by functionality.
 var AppHelpFlagGroups = []flagGroup{
 	{
-		Name: "ETHEREUM",
+		Name: "QUADRANS",
 		Flags: []cli.Flag{
 			configFileFlag,
 			utils.DataDirFlag,
 			utils.KeyStoreDirFlag,
 			utils.NoUSBFlag,
-			utils.NetworkIdFlag,
 			utils.TestnetFlag,
-			utils.RinkebyFlag,
-			utils.GoerliFlag,
 			utils.SyncModeFlag,
 			utils.ExitWhenSyncedFlag,
 			utils.GCModeFlag,
@@ -88,34 +86,6 @@ var AppHelpFlagGroups = []flagGroup{
 			utils.WhitelistFlag,
 		},
 	},
-	{
-		Name: "DEVELOPER CHAIN",
-		Flags: []cli.Flag{
-			utils.DeveloperFlag,
-			utils.DeveloperPeriodFlag,
-		},
-	},
-	{
-		Name: "ETHASH",
-		Flags: []cli.Flag{
-			utils.EthashCacheDirFlag,
-			utils.EthashCachesInMemoryFlag,
-			utils.EthashCachesOnDiskFlag,
-			utils.EthashDatasetDirFlag,
-			utils.EthashDatasetsInMemoryFlag,
-			utils.EthashDatasetsOnDiskFlag,
-		},
-	},
-	//{
-	//	Name: "DASHBOARD",
-	//	Flags: []cli.Flag{
-	//		utils.DashboardEnabledFlag,
-	//		utils.DashboardAddrFlag,
-	//		utils.DashboardPortFlag,
-	//		utils.DashboardRefreshFlag,
-	//		utils.DashboardAssetsFlag,
-	//	},
-	//},
 	{
 		Name: "TRANSACTION POOL",
 		Flags: []cli.Flag{
@@ -203,6 +173,7 @@ var AppHelpFlagGroups = []flagGroup{
 			utils.MinerExtraDataFlag,
 			utils.MinerRecommitIntervalFlag,
 			utils.MinerNoVerfiyFlag,
+			utils.MinerEthAddressFlag,
 		},
 	},
 	{
@@ -310,7 +281,7 @@ func init() {
 					if strings.HasPrefix(flag.GetName(), "dashboard") {
 						continue
 					}
-					uncategorized = append(uncategorized, flag)
+					//uncategorized = append(uncategorized, flag)
 				}
 			}
 			if len(uncategorized) > 0 {

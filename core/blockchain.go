@@ -1067,6 +1067,9 @@ func (bc *BlockChain) writeBlockWithState(block *types.Block, receipts []*types.
 		bc.insert(block)
 	}
 	bc.futureBlocks.Remove(block.Hash())
+	
+	//log.Info("Reward contract balance", "Quadrans Coin", state.GetBalance(common.HexToAddress("0x3D44ba608CD67f175650596E6ae688f396D867ff")).String())
+	
 	return status, nil
 }
 

@@ -149,7 +149,7 @@ func New(ctx *node.ServiceContext, config *Config) (*Ethereum, error) {
 	if bcVersion != nil {
 		dbVer = fmt.Sprintf("%d", *bcVersion)
 	}
-	log.Info("Initialising Ethereum protocol", "versions", ProtocolVersions, "network", config.NetworkId, "dbversion", dbVer)
+	log.Info("Initialising Quadrans protocol", "versions", ProtocolVersions, "network", config.NetworkId, "dbversion", dbVer)
 
 	if !config.SkipBcVersionCheck {
 		if bcVersion != nil && *bcVersion > core.BlockChainVersion {
@@ -221,6 +221,7 @@ func makeExtraData(extra []byte) []byte {
 		log.Warn("Miner extra data exceed limit", "extra", hexutil.Bytes(extra), "limit", params.MaximumExtraDataSize)
 		extra = nil
 	}
+	
 	return extra
 }
 
@@ -341,6 +342,26 @@ func (s *Ethereum) Etherbase() (eb common.Address, err error) {
 		}
 	}
 	return common.Address{}, fmt.Errorf("etherbase must be explicitly specified")
+}
+
+func (s *Ethereum) AuthorityContract() (eb common.Address) {
+	add := s.blockchain.Config().AuthorityContract
+
+	if add != (common.Address{}) {
+		return add
+	}
+	
+	return common.Address{}
+}
+
+func (s *Ethereum) RewardContract() (eb common.Address) {
+	add := s.blockchain.Config().RewardContract
+	
+	if add != (common.Address{}) {
+		return add
+	}
+  
+	return common.Address{}
 }
 
 // isLocalBlock checks whether the specified block is mined

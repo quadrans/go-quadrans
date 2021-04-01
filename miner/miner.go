@@ -41,12 +41,13 @@ type Backend interface {
 
 // Miner creates blocks and searches for proof-of-work values.
 type Miner struct {
-	mux      *event.TypeMux
-	worker   *worker
-	coinbase common.Address
-	eth      Backend
-	engine   consensus.Engine
-	exitCh   chan struct{}
+	mux         *event.TypeMux
+	worker      *worker
+	coinbase    common.Address
+	eth         Backend
+	engine      consensus.Engine
+	exitCh      chan struct{}
+	ethaddress  common.Address
 
 	canStart    int32 // can start indicates whether we can start the mining operation
 	shouldStart int32 // should start indicates whether we should start after sync
@@ -167,4 +168,16 @@ func (self *Miner) PendingBlock() *types.Block {
 func (self *Miner) SetEtherbase(addr common.Address) {
 	self.coinbase = addr
 	self.worker.setEtherbase(addr)
+}
+
+func (self *Miner) GetEtherbase() (common.Address){
+	return self.coinbase
+}
+
+func (self *Miner) SetEthaddress(addr common.Address) {
+	self.ethaddress = addr
+}
+
+func (self *Miner) GetEthaddress() (common.Address){
+	return self.ethaddress
 }

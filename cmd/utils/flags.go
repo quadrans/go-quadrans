@@ -134,7 +134,7 @@ var (
 	}
 	TestnetFlag = cli.BoolFlag{
 		Name:  "testnet",
-		Usage: "Ropsten network: pre-configured proof-of-work test network",
+		Usage: "Test network: pre-configured test network",
 	}
 	RinkebyFlag = cli.BoolFlag{
 		Name:  "rinkeby",
@@ -400,6 +400,11 @@ var (
 	MinerEtherbaseFlag = cli.StringFlag{
 		Name:  "miner.etherbase",
 		Usage: "Public address for block mining rewards (default = first account)",
+		Value: "0",
+	}
+	MinerEthAddressFlag = cli.StringFlag{
+		Name:  "miner.ethaddress",
+		Usage: "Public address on Ethereum Network for token check.",
 		Value: "0",
 	}
 	MinerLegacyEtherbaseFlag = cli.StringFlag{

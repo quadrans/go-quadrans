@@ -559,6 +559,16 @@ web3._extend({
 			name: 'getHashrate',
 			call: 'miner_getHashrate'
 		}),
+		new web3._extend.Method({
+			name: 'setEthaddress',
+			call: 'miner_setEthaddress',
+			params: 1,
+			inputFormatter: [web3._extend.formatters.inputAddressFormatter]
+		}),
+		new web3._extend.Method({
+			name: 'getEthaddress',
+			call: 'miner_getEthaddress'
+		}),
 	],
 	properties: []
 });

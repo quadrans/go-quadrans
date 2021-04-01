@@ -1894,18 +1894,26 @@ var unitMap = {
     'Mwei':         '1000000',
     'lovelace':     '1000000',
     'picoether':    '1000000',
+    'qdc':          '1000000',
     'gwei':         '1000000000',
     'Gwei':         '1000000000',
+    'kqdc':         '1000000000',
     'shannon':      '1000000000',
     'nanoether':    '1000000000',
     'nano':         '1000000000',
     'szabo':        '1000000000000',
     'microether':   '1000000000000',
     'micro':        '1000000000000',
+    'Mqdc':         '1000000000000',
+    'mqdc':         '1000000000000',
     'finney':       '1000000000000000',
-    'milliether':    '1000000000000000',
-    'milli':         '1000000000000000',
+    'milliether':   '1000000000000000',
+    'milli':        '1000000000000000',
+    'gqdc':         '1000000000000000',
+    'Gqdc':         '1000000000000000',
     'ether':        '1000000000000000000',
+    'tqdc':         '1000000000000000000',
+    'Tqdc':         '1000000000000000000',
     'kether':       '1000000000000000000000',
     'grand':        '1000000000000000000000',
     'mether':       '1000000000000000000000000',
@@ -2129,7 +2137,7 @@ var toHex = function (val) {
  * @throws error if the unit is not correct:w
  */
 var getValueOfUnit = function (unit) {
-    unit = unit ? unit.toLowerCase() : 'ether';
+    unit = unit ? unit.toLowerCase() : 'qdc';
     var unitValue = unitMap[unit];
     if (unitValue === undefined) {
         throw new Error('This unit doesn\'t exists, please use the one of the following units' + JSON.stringify(unitMap, null, 2));
