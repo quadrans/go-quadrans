@@ -51,7 +51,7 @@ The go-quadrans project comes with several wrappers/executables found in the `cm
 Going through all the possible command line flags is out of scope here (please consult our
 [CLI Documentation page](https://docs.quadrans.io/nodes/management/command_line_options.html)), but we've
 enumerated a few common parameter combos to get you up to speed quickly on how you can run your
-own Geth instance.
+own Gqdc instance.
 
 ### Full node on the Quadrans mainnet network
 
@@ -77,10 +77,11 @@ $ gqdc --testnet console
 
 The `console` subcommand has the exact same meaning as above and they are equally useful on the testnet too. Please see above for their explanations if you've skipped here.
 
-Specifying the `--testnet` flag, however, will reconfigure your Geth instance a bit:
+Specifying the `--testnet` flag, however, will reconfigure your Gqdc instance a bit:
 
  * Instead of using the default data directory (`~/.quadrans` on Linux for example), Gqdc will nest itself one level deeper into a `testnet` subfolder (`~/.quadrans/testnet` on Linux). Note, on OSX and Linux this also means that attaching to a running testnet node requires the use of a custom endpoint since `gqdc attach` will try to attach to a production node endpoint by default. E.g. `gqdc attach <datadir>/testnet/gqdc.ipc`. Windows users are not affected by this.
  * Instead of connecting the main Quadrans network, the client will connect to the testnet network, which uses different P2P bootnodes, different network IDs and genesis states.
+ * Instead of using Mainnet Quadrans Coins (QDC) for paying transaction costs it will use free [faucet Quadrans Coins](https://faucetpage.quadrans.io).
    
 *Note: Although there are some internal protective measures to prevent transactions from crossing over between the main network and test network, you should make sure to always use separate accounts for play-money and real-money. Unless you manually move accounts, Gqdc will by default correctly separate the two networks and will not make any accounts available between them.*
 
