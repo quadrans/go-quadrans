@@ -4,7 +4,7 @@ FROM golang:1.12-alpine as builder
 RUN apk add --no-cache make gcc musl-dev linux-headers
 
 ADD . /go-quadrans
-RUN cd /go-quadrans && make geth
+RUN cd /go-quadrans && make gqdc
 
 # Pull Geth into a second stage deploy alpine container
 FROM alpine:latest
