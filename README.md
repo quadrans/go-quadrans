@@ -36,6 +36,33 @@ or, to build the full suite of utilities:
 
     make all
 
+## Use Docker
+
+In order to use `gqdc` with Docker you need to follow these steps:
+
+```
+docker build -t quadrans:gqdc .
+docker run --name gqdc quadrands:gqdc
+```
+
+If you need to add additional parameters you can run the docker like this:
+
+```
+docker run --name gqdc quadrans:gqdc --rpc --ethstats 'node_name':QuadransStatsNetwork@status.quadrans.io:3000 >> gqdc.log
+```
+
+You can stop the container using `CTRL-C` and start it again with:
+
+```
+docker start gqdc
+```
+
+If you want to read the log you can use:
+
+```
+watch docker logs gqdc
+```
+
 ## Executables
 
 The go-quadrans project comes with several wrappers/executables found in the `cmd` directory.
